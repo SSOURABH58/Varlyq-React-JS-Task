@@ -1,10 +1,8 @@
 import { combineReducers, configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import authReducer from './redux/auth/slice';
-import roomsReducer from './redux/rooms/slice';
+import albumsReducer from './redux/albums/slice';
 
 const rootReducer = combineReducers({
-    auth: authReducer,
-    rooms: roomsReducer,
+    rooms: albumsReducer,
 });
 
 export type RootStateType = ReturnType<typeof rootReducer>;

@@ -1,35 +1,38 @@
 import React, { useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { asyncFetchRooms } from '../../redux/rooms/asyncActions';
-import { selectRooms } from '../../redux/rooms/selectors';
-import MediaCard from '../../components/Card';
-import { Container } from '@material-ui/core';
-import { useStyles } from './styles';
+import { asyncFetchAlbums, asyncFetchPhotos } from '../../redux/albums/asyncActions';
+import { selectAlbums, selectAlbumsStructure } from '../../redux/albums/selectors';
+import { Container, makeStyles, Typography } from '@material-ui/core';
+import SearchBar from '../../components/SearchBar';
+import Albums from '../../components/Albums';
+
+const useStyles = makeStyles({
+    Container: {
+        padding: '1rem',
+    },
+});
 
 const Home: React.FC = () => {
-    const rooms = useSelector(selectRooms);
+    const albums = useSelector(selectAlbums);
+    const AlbumsStructure = useSelector(selectAlbumsStructure);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(asyncFetchRooms());
+        dispatch(asyncFetchAlbums());
+        dispatch(asyncFetchPhotos());
     }, []);
     const classes = useStyles();
     return (
-        <Container maxWidth="lg">
-            <Grid
-                container
-                justify="center"
-                direction="column"
-                alignItems="center"
-                spacing={4}
-                className={classes.root}
-            >
-                {rooms.map(({ _id, title, description }) => (
-                    <Grid key={_id} item>
-                        <MediaCard title={title} description={description} navigationLink={`/rooms/${_id}`} />
-                    </Grid>
-                ))}
-            </Grid>
+        <Container classes={{ root: classes.Container }} maxWidth="lg">
+            <SearchBar />
+            {AlbumsStructure.length ? (
+                AlbumsStructure.map(({ title, id, photos }, index) => (
+                    <Albums key={index} title={title} id={id} photos={photos} />
+                ))
+            ) : (
+                <Typography variant="h6" component="h2">
+                    No results found.
+                </Typography>
+            )}
         </Container>
     );
 };
