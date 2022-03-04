@@ -54,6 +54,21 @@ const getAlbumsStructure = (albums: any[], photos: photo[], filter: string) =>
         .filter((album) => album.photos.length > 0)
         ?.slice(0, numberOfAlbums);
 
+const getPhotosList = (albums: any[], photos: photo[], filter: string) => {
+    const albumFilter = albums?.map((album: Record<string, unknown>) => ({
+        ...album,
+        photos: photos?.filter((photo: photo) => photo.albumId === album.id)?.slice(0, numberOfPhotos),
+    }));
+
+    let temp_photos: photo[] = [];
+    temp_photos = [];
+
+    albumFilter.forEach((album) => {
+        temp_photos.push(...album.photos);
+    });
+    return temp_photos;
+};
+
 export const albumsSlice = createSlice({
     name: 'albums',
     initialState,
@@ -69,8 +84,8 @@ export const albumsSlice = createSlice({
         });
         builder.addCase(asyncFetchAlbums.fulfilled, (state, action: PayloadAction<any[]>) => {
             state.statusAlbums = 'fulfilled';
-            state.albums = action.payload;
-            state.AlbumsStructure = getAlbumsStructure(action.payload, state.photos, state.filter);
+            state.albums = action.payload.slice(0, 5);
+            state.AlbumsStructure = getAlbumsStructure(action.payload.slice(0, 5), state.photos, state.filter);
         });
         builder.addCase(asyncFetchAlbums.rejected, (state, action) => {
             state.statusAlbums = 'rejected';
@@ -80,8 +95,10 @@ export const albumsSlice = createSlice({
         });
         builder.addCase(asyncFetchPhotos.fulfilled, (state, action: PayloadAction<any[]>) => {
             state.statusPhotos = 'fulfilled';
-            state.photos = action.payload;
-            state.AlbumsStructure = getAlbumsStructure(state.albums, action.payload, state.filter);
+            const photo = getPhotosList(state.albums, action.payload, state.filter);
+            state.photos = photo;
+
+            state.AlbumsStructure = getAlbumsStructure(state.albums, photo, state.filter);
         });
         builder.addCase(asyncFetchPhotos.rejected, (state, action) => {
             state.statusPhotos = 'rejected';
