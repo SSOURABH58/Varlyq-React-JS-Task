@@ -23,7 +23,7 @@ const Album: React.FC<IProps> = ({ photo: photo }) => {
                         </Typography>
                     </Grid>
                     <Grid item>
-                        <Link href="#" onClick={preventDefault} classes={{ root: classes.links }} underline="always">
+                        <Link href={url} classes={{ root: classes.links }} underline="always">
                             {url}
                         </Link>
                     </Grid>
